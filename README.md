@@ -1,6 +1,6 @@
 # Licenta
 
-#### CrashSplat: 2D to 3D Vehicle Damage Detection in Gaussian Splatting by Dragos-Andrei Chileban - Installation and running guide
+#### CrashSplat: 2D to 3D Vehicle Damage Segmentation in Gaussian Splatting by Dragos-Andrei Chileban - Installation and running guide
 
 #### There are two git repositories that contain the source code of the project.
 
