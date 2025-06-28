@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, send_from_directory, make_response
 from flask_cors import CORS
 import os
-from segmentation.run_script import run_
+from scripts.run_script import run_
 import argparse
 import json
 import time

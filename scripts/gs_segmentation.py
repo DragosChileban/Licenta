@@ -5,7 +5,6 @@ import json
 import cv2
 from plyfile import PlyData, PlyElement
 import time
-from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
 
 def load_ply(file_path, cameras, shrink=True):

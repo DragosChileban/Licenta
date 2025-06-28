@@ -1,7 +1,6 @@
 import os
 import shutil
 import cv2
-import subprocess
 import math
 
 def clear_directory(directory_path):

@@ -1,15 +1,12 @@
 import argparse
 import os
-import sys
-sys.path.append('/Users/dragos/Licenta/Thesis')
-from Projection3DGS.sfm_utils import run_ffmpeg, run_colmap, clear_directory
-from Projection3DGS.gs_segmentation import run_projection
+from scripts.sfm_utils import run_ffmpeg, run_colmap, clear_directory
+from scripts.gs_segmentation import run_projection
 import subprocess
 import torch
 from ultralytics import YOLO
 import cv2
 import numpy as np
-from torchvision.utils import draw_segmentation_masks
 import json
 
 def run_(args):
