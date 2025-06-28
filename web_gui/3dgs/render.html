@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge" />
+  <title>Render</title>
+  <script>
+    function openDemo(page, params) {
+        let url = page + '.html';
+        if (params && params.length > 0) {
+          let index = 0;
+          for (let param of params) {
+            url += (index === 0 ? "?" : "&");
+            url += param[0] + "=" + param[1];
+            index++;
+          }
+        }
+        window.location = url;
+      }
+      function reset() {
+        window.location = 'index.html';
+      }
+    </script>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./lib/three.module.js",
+        "@mkkellogg/gaussian-splats-3d": "./lib/gaussian-splats-3d.module.js"
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: "Lato", sans-serif;
+      background-color: #111;
+      /* background-color: white; */
+    }
+
+    .sidebar {
+      height: 100%;
+      width: 0;
+      position: fixed;
+      z-index: 1;
+      top: 0;
+      left: 0;
+      background-color: #111;
+      overflow-x: hidden;
+      transition: 0.5s;
+      padding-top: 60px;
+    }
+
+    .sidebar a {
+      padding: 8px 8px 8px 32px;
+      text-decoration: none;
+      font-size: 25px;
+      color: #818181;
+      display: block;
+      transition: 0.3s;
+    }
+
+    .sidebar a:hover {
+      color: #f1f1f1;
+    }
+
+    .sidebar .closebtn {
+      position: absolute;
+      top: 0;
+      right: 25px;
+      font-size: 36px;
+      margin-left: 50px;
+    }
+
+    .sidebar .projbtn {
+      position: absolute;
+      top: 15px;
+      background-color: #222;
+      color: #fff;
+      padding: 8px 16px;
+      font-size: 18px;
+      border: 2px solid #444;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .sidebar .projbtn:hover {
+      background-color: #333;
+      border-color: #666;
+    }
+
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px;
+    }
+
+
+    .image-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .image-item {
+      background-color: #222;
+      border-radius: 5px;
+      padding: 5px;
+    }
+
+    .image-item img {
+      width: 100%;
+      border-radius: 5px;
+    }
+
+    .image-item p {
+      margin-top: 5px;
+      font-size: 14px;
+      color: white;
+    }
+
+    .openbtn {
+      font-size: 18px;
+      cursor: pointer;
+      background-color: #1a1a1a; 
+      color: #ffffff;
+      padding: 10px 20px;
+      border: 2px solid #333;
+      border-radius: 10px;         
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); 
+      transition: all 0.3s ease;
+    }
+
+    .openbtn:hover {
+      background-color: #333333;
+      border-color: #555;
+      color: #f0f0f0;
+    }
+
+    .homebtn {
+      font-size: 18px;
+      cursor: pointer;
+      background-color: #1a1a1a; 
+      color: #ffffff;
+      padding: 10px 20px;
+      border: 2px solid #333;
+      border-radius: 10px;         
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); 
+      transition: all 0.3s ease;
+    }
+
+    .homebtn:hover {
+      background-color: #333333;
+      border-color: #555;
+      color: #f0f0f0;
+    }
+
+    .openbtn2 {
+      background-color: #222;
+      color: #fff;
+      padding: 8px 16px;
+      border: 2px solid #444;
+      font-size: 18px;
+      cursor: pointer;
+      border-radius: 10px;         
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); 
+      transition: all 0.3s ease;
+    }
+
+    .openbtn2:hover {
+      background-color: #333;
+      border-color: #666;
+    }
+
+    .main-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 10px;
+    }
+
+
+    .legend {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      font-size: 30px;
+      color: black;
+    }
+
+    .color-box {
+      width: 40px;
+      height: 25px;
+      margin-right: 6px;
+      border: 3px solid black;
+      display: inline-block;
+    }
+
+    #main {
+      transition: margin-left .5s;
+      padding: 16px;
+      background-color: white;
+    }
+
+    /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
+    @media screen and (max-height: 450px) {
+      .sidebar {padding-top: 15px;}
+      .sidebar a {font-size: 18px;}
+    }
+</style>
+</head>
+
+<body>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const sample_dir = String(urlParams.get('sample'));
+        const button = document.querySelector(".projbtn");
+
+        if (sample_dir && button) {
+          button.onclick = function () {
+            openDemo('render', [['sample', sample_dir], ['idx', '0000'], ['cam', '[-5, -1, -1]']]);
+          };
+        }
+      });
+    </script>
+
+    <div id="mySidebar" class="sidebar">
+      <div class="sidebar-header">
+        <button class="projbtn" onclick="openDemo('render', [['idx', '0000'], ['cam', '[-5, -1, -1]']])">Project all masks ⏩</button>  
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+      </div>
+      <div class="image-list"></div>
+      </div>
+
+    <div id="main" class="main-header">
+      <button class="openbtn" onclick="openNav()">☰ Masks List</button>  
+
+      <div class="legend">
+        <div class="legend-item"><span class="color-box" style="background-color: pink;"></span>dent</div>
+        <div class="legend-item"><span class="color-box" style="background-color: deepskyblue;"></span>scratch</div>
+        <div class="legend-item"><span class="color-box" style="background-color: lime;"></span>crack</div>
+        <div class="legend-item"><span class="color-box" style="background-color: purple;"></span>glass shatter</div>
+        <div class="legend-item"><span class="color-box" style="background-color: gold;"></span>lamp broken</div>
+        <div class="legend-item"><span class="color-box" style="background-color: red;"></span>tire flat</div>
+      </div>
+
+      <button class="homebtn" onclick="reset()">🏠 Home</button>  
+    </div>
+
+
+  <script>
+    function openNav() {
+      document.getElementById("mySidebar").style.width = "450px";
+      document.getElementById("main").style.marginLeft = "250px";
+    }
+
+    function closeNav() {
+      document.getElementById("mySidebar").style.width = "0";
+      document.getElementById("main").style.marginLeft= "0";
+      document.getElementById("mySidebar").style.marginRight= "0";
+    }
+  </script>
+
+  <script>
+      function toggleImage(idx) {
+        const url = String(document.getElementById('img_' + String(idx)).src);
+        console.log('Current utl ', url)
+        let final_url = url
+        if (url.includes('wm')) {
+          console.log('Current utl includes wm  ', url)
+          final_url = url.replace('wm', 'wom')
+          document.getElementById('btn_' + String(idx)).innerText = '✅ Show Masks';
+        }
+        else if (url.includes('wom')) {
+          console.log('Current utl includes wom  ', url)
+          final_url = url.replace('wom', 'wm')
+          document.getElementById('btn_' + String(idx)).innerText = '⛔ Hide Masks';
+        }
+        document.getElementById('img_' + String(idx)).src = final_url;
+      }
+    </script>
+
+  <script>
+      function deletePred(sample_dir, pred_name) {
+        fetch('http://localhost:5100/delete-pred/' + sample_dir + '/' + pred_name, {
+          method: 'DELETE'
+        }).then(res => res.json())
+          .then(data => {
+            if (data.status === 'success') {
+              const item = document.getElementById(`item_${pred_name}`);
+              if (item) {
+                item.remove();
+              }
+            } else {
+              alert('Error: ' + data.message);
+            }
+          })
+          .catch(err => {
+            console.error(err);
+            alert('An error occurred during deletion.');
+          });
+            }
+  </script>
+
+  <script>
+    async function loadImages() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const sample_dir = String(urlParams.get('sample'));
+      const response = await fetch('http://localhost:5100/get-samples-data/' + sample_dir);
+      const data = await response.json();
+
+      const container = document.querySelector('.image-list');
+      container.innerHTML = ''; 
+
+      data.forEach(image => {
+        const item = document.createElement('div');
+        item.className = 'image-item';
+        let idx = String(image.filename).substring(0, 4)
+        let cam = String(image.camera)
+        item.id = `item_${idx}`;  
+
+        item.innerHTML = `
+          <div class="image-header">
+            <button id="btn_${idx}" class="openbtn2" onclick="toggleImage('${idx}')">⛔ Hide Masks</button>
+            <button class="openbtn2" onclick="openDemo('render', [['sample', '${sample_dir}'], ['idx', '${idx}'], ['cam', '${cam}']])">Project Mask ⏩</button>
+            <button id="del_btn" class="openbtn2" onclick="deletePred('${sample_dir}', '${idx}')">🗑</button>
+          </div>
+          <div class="image-wrapper">
+            <img id="img_${idx}" src="${image.url}" alt="${image.filename}" />
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    
+    window.onload = loadImages;
+  </script>
+
+  <script type="module">
+    import * as GaussianSplats3D from '@mkkellogg/gaussian-splats-3d';
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const idx = String(urlParams.get('idx')).substring(0, 4);
+    const camString = String(urlParams.get('cam'));
+    const sample_dir = String(urlParams.get('sample'));
+    let camPos = camString.split(',').map(s => parseFloat(s.trim()) * 2);
+    if (idx == '0000') {
+        camPos = [-5, -1, -1]
+    }
+
+    const viewer = new GaussianSplats3D.Viewer({
+      cameraUp: [0, -1, -.17],
+      initialCameraPosition: camPos,
+      initialCameraLookAt: [0, 0, 0],
+      sphericalHarmonicsDegree: 2
+    });
+
+    let path = 'http://localhost:5100/splats/' + sample_dir + '/proj_' + idx + '.ply';
+    viewer.addSplatScene(path, {
+      progressiveLoad: false
+    }).then(() => {
+      viewer.start();
+    });
+  </script>
+</body>
+
+</html>
+
