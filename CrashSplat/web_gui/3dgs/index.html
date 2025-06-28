@@ -142,7 +142,7 @@ button:hover {
     </button>
   </div>
 
-  <div style="display: flex; justify-content: center; gap: 20px; margin-top: 40px;">
+  <!-- <div style="display: flex; justify-content: center; gap: 20px; margin-top: 40px;">
   <button style="padding: 10px 20px; font-size: 16px; cursor: pointer;" onclick="openDemo('render', [['sample', 'car1'], ['idx', '0000']])">
     Car 1
   </button>
@@ -154,7 +154,38 @@ button:hover {
   <button style="padding: 10px 20px; font-size: 16px; cursor: pointer;" onclick="openDemo('render', [['sample', 'car3'], ['idx', '0000']])">
     Car 3
   </button>
+  </div> -->
+  <div style="display: flex; justify-content: center; gap: 20px; margin-top: 40px;">
+
+    <!-- Card 1 -->
+    <div style="border: 1px solid #ccc; border-radius: 8px; padding: 10px; width: 180px; text-align: center; box-shadow: 2px 2px 6px rgba(0,0,0,0.1);">
+      <h3>Car 1</h3>
+      <img src="/car1.jpg" alt="Car 1" style="width: 100%; border-radius: 4px;" />
+      <div style="margin-top: 10px;">
+        <button onclick="openDemo('render', [['sample', 'car1'], ['idx', '0000']])">View</button>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div style="border: 1px solid #ccc; border-radius: 8px; padding: 10px; width: 180px; text-align: center; box-shadow: 2px 2px 6px rgba(0,0,0,0.1);">
+      <h3>Car 2</h3>
+      <img src="/car2.jpg" alt="Car 2" style="width: 100%; border-radius: 4px;" />
+      <div style="margin-top: 10px;">
+        <button onclick="openDemo('render', [['sample', 'car2'], ['idx', '0000']])">View</button>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div style="border: 1px solid #ccc; border-radius: 8px; padding: 10px; width: 180px; text-align: center; box-shadow: 2px 2px 6px rgba(0,0,0,0.1);">
+      <h3>Car 3</h3>
+      <img src="/car3.jpg" alt="Car 3" style="width: 100%; border-radius: 4px;" />
+      <div style="margin-top: 10px;">
+        <button onclick="openDemo('render', [['sample', 'car3'], ['idx', '0000']])">View</button>
+      </div>
+    </div>
+
   </div>
+
 
   <script type="module" src="src/counter.js"></script>
 

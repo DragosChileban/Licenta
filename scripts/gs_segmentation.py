@@ -91,31 +91,25 @@ def save_ply(vertex, new_colors, new_opacities, path, new_indexes=None):
         )
         new_vertex_data.append(new_vertex)
 
-    # Define the data structure
     vertex_dtype = [
         ('x', 'f4'), ('y', 'f4'), ('z', 'f4'),
         ('nx', 'f4'), ('ny', 'f4'), ('nz', 'f4'),
         ('f_dc_0', 'f4'), ('f_dc_1', 'f4'), ('f_dc_2', 'f4'),
     ]
 
-    # Add all f_rest_* fields
     vertex_dtype += [(f"f_rest_{i}", 'f4') for i in range(45)]
 
-    # Remaining fields
     vertex_dtype += [
         ('opacity', 'f4'),
         ('scale_0', 'f4'), ('scale_1', 'f4'), ('scale_2', 'f4'),
         ('rot_0', 'f4'), ('rot_1', 'f4'), ('rot_2', 'f4'), ('rot_3', 'f4')
     ]
 
-    # Create numpy array
     vertex_array = np.array(new_vertex_data, dtype=vertex_dtype)
 
-    # Create PlyElement and PlyData
     ply_el = PlyElement.describe(vertex_array, 'vertex')
     ply_data = PlyData([ply_el], text=False)
 
-    # Save to disk
     ply_data.write(path)
 
 def get_masks(masks_path, img_name):
@@ -170,7 +164,7 @@ def project_points(points, camera):
     valid = points_cam[:, 2] > 0
     z = points_cam[:, 2]
     
-    valid = valid & (px >= 0) & (px < camera['width']) & (py >= 0) & (py < camera['height'])# & (z < 0.4) #the condition for depth
+    valid = valid & (px >= 0) & (px < camera['width']) & (py >= 0) & (py < camera['height'])
     
     return px, py, valid, z
 
@@ -209,7 +203,6 @@ def project_mask(px, py, fx, fy, R, points_cam, scales, rotations, opacities, so
     collect_time = 0
     check_time = 0
 
-    # mask_sorted_indices = sorted_indices[np.isin(sorted_indices, mask_indices)]
     mask_sorted_indices = sorted_indices[
         np.isin(sorted_indices, mask_idxs)
     ]
@@ -228,14 +221,9 @@ def project_mask(px, py, fx, fy, R, points_cam, scales, rotations, opacities, so
             x_proj = px[gauss_idx]
             y_proj = py[gauss_idx]
 
-            # print("Opacity vector ", opacity_vals[0])
-
-            # print("Gauss idx", gauss_idx)
-
-            # print("Checking buffer for vals ", x_proj, y_proj)
 
 
-            if gauss_buffer[int(y_proj), int(x_proj)] < np.mean(opacity_vals):# - np.std(opacity_vals):
+            if gauss_buffer[int(y_proj), int(x_proj)] < np.mean(opacity_vals):
 
                 check2 = time.time() - check1
                 check_time += check2
@@ -246,7 +234,7 @@ def project_mask(px, py, fx, fy, R, points_cam, scales, rotations, opacities, so
                 quat = rotations[gauss_idx]
                 opacity = opacities[gauss_idx]
 
-                # print("Opacity", opacity)
+               
 
                 rot_matrix = quaternion_to_rotation_matrix(quat)
                 scale_matrix = np.diag(np.exp(scale))
@@ -261,10 +249,8 @@ def project_mask(px, py, fx, fy, R, points_cam, scales, rotations, opacities, so
                 cov_image = J @ cov_camera[0:3, 0:3] @ J.T
 
                 eigvals, eigvecs = np.linalg.eigh(cov_image)
-                eigvals = np.maximum(eigvals, 1e-6)  # Ensure positive values
+                eigvals = np.maximum(eigvals, 1e-6)  
                 
-                # Calculate bounding box
-                # Use 3 standard deviations for coverage
                 sigma_factor = 3.0
                 bbox_radius = np.ceil(sigma_factor * np.sqrt(np.max(eigvals))).astype(int)
 
@@ -281,19 +267,16 @@ def project_mask(px, py, fx, fy, R, points_cam, scales, rotations, opacities, so
                 roi_x = roi_x.flatten()
                 roi_y = roi_y.flatten()
                 
-                # Calculate Gaussian PDF
                 dx = roi_x - x_proj
                 dy = roi_y - y_proj
                 points = np.vstack([dx, dy]).T
                 
-                # Calculate Mahalanobis distance
                 inv_cov = np.linalg.inv(cov_image)
                 mahalanobis_dist = np.sum(points @ inv_cov * points, axis=1)
                 
-                # Calculate Gaussian weights
                 weights = opacity * np.exp(-0.5 * mahalanobis_dist)
 
-                threshold = min(0.05 * opacity, 1e-5)#mahalanobis_dist <= 6#0.01 *opacity  # or 0.1 *opacity
+                threshold = min(0.05 * opacity, 1e-5)
                 important_indices = weights > threshold
 
                 important_roi_x = np.array(roi_x[important_indices])
@@ -344,9 +327,6 @@ def project_mask(px, py, fx, fy, R, points_cam, scales, rotations, opacities, so
 
     elapsed = time.time() - start
 
-    # print('Function finished in: ', elapsed)
-
-
     return segmentation_idxs, z_buffer, weights_map, opacity_vals, elapsed
 
 
@@ -390,14 +370,12 @@ def run_projection(args):
 
         new_colors = np.copy(colors)
         new_opacities = np.copy(opacities)
-        # mask=mask[0]
         
         for mask_idx, mask_dict in enumerate(masks):
             print("Processing mask:", sample_idx)
             mask_path = os.path.join(masks_path, mask_dict['path'])
             try:
                 mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
-                # mask_height, mask_width = mask.shape[:2]
                 if mask is None:
                     print(f"[!] Failed to load mask: {mask_path}")
                     continue

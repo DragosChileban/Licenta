@@ -8,8 +8,14 @@ from ultralytics import YOLO
 import cv2
 import numpy as np
 import json
+from pathlib import Path
 
 def run_(args):
+    model_dir = Path(__file__).resolve().parents[1] / 'checkpoints'
+    model_path = os.path.join(model_dir, 'best.pt')
+
+    splat_build_dir = Path(__file__).resolve().parents[1] / 'OpenSplat/build'
+
     print(args.video_path)
     root_dir = os.path.dirname(os.path.abspath(args.video_path))
 
@@ -43,7 +49,6 @@ def run_(args):
 
     if args.gauss:
         #Run 3DGS
-        build_dir = '/Users/dragos/Licenta/OpenSplat/build'
         opensplat_executable = './opensplat'
         
         splat_path = os.path.join(root_dir, 'splats')
@@ -57,11 +62,10 @@ def run_(args):
 
         splat_args = [root_dir, '-n', str(steps), '-o', os.path.join(splat_path, "3dgs.ply")] 
         print("Running OpenSplat...")
-        subprocess.run([opensplat_executable] + splat_args, cwd=build_dir, check=True)
+        subprocess.run([opensplat_executable] + splat_args, cwd=splat_build_dir, check=True)
     else:
         print("No 3DGS step requested. Skipping...")
 
-    # hard_coded_idxs = [1]#, 42, 103]
     segmentation_idxs = []
     if args.segment:
         camera_path = os.path.join(root_dir, 'splats', 'cameras.json')
@@ -92,7 +96,6 @@ def run_(args):
         except Exception as e:
             print(f"Error creating directory {masks_path}: {e}")
 
-        model_path = '/Users/dragos/Licenta/Results/YOLO/best.pt'
         model = YOLO(model_path)
         device = torch.device('mps')
         model.to(device)

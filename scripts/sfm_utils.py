@@ -89,9 +89,3 @@ def run_colmap(frames_path):
     os.system(f"colmap mapper --database_path {db_path} --image_path {images_folder} --output_path {sparse_path}")
 
 
-    
-    # os.system(f"colmap automatic_reconstructor \
-    # --workspace_path {os.path.dirname(resized_path)} \
-    # --image_path {resized_path}")
-
-

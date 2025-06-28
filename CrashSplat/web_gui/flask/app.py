@@ -13,9 +13,6 @@ new_sample_root = os.path.join(upload_root, 'new_sample')
 app = Flask(__name__)
 CORS(app)
 
-# upload_root = '/Users/dragos/Licenta/data/presentation_demo'
-# new_sample_root = '/Users/dragos/Licenta/data/presentation_demo/new_sample'
-
 
 @app.route('/get-sample-wm/<path:sample_dir>/<filename>')
 def get_sample_wm(sample_dir, filename):
