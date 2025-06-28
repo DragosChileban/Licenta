@@ -52,8 +52,8 @@ pip install -e .                   #install the module in edit mode
 </pre>
 
 ## 3. Download and copy the model checkpoints and demo examples
-Next, you will need to download the weights for the segmentation model from [here](weights) and copy the file to Licenta/checkpoints.
-The app also includes 3 examples of 3D car reconstructions with segmentation damages. You need to download them from [here](samples) and add in Licenta/CrashSplat/web_gui/demo.
+Next, you will need to download the weights for the segmentation model from [here](https://drive.google.com/drive/folders/1EoeuTbcXlxWOrH2i0p9ZygxUZFacvN3c?usp=sharing) and copy the file to Licenta/checkpoints.
+The app also includes 3 examples of 3D car reconstructions with segmentation damages. You need to download them from [here](https://drive.google.com/drive/folders/19TriTDku4Z2L5vrRDScYspxySbk4oOQl?usp=sharing) and add in Licenta/CrashSplat/web_gui/demo.
 
 ## 4. Running the front-end app
 <pre>
