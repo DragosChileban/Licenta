@@ -9,6 +9,6 @@ setup(
    packages=['Licenta'],  
 #    install_requires=['wheel', 'bar', 'greek'], #external packages as dependencies
    scripts=[
-            'segmentation/run_script',
+            'segmentation/run_script.py',
            ]
 )
